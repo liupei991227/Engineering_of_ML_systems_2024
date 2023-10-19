@@ -53,14 +53,11 @@ Let's first enable bidirectional shared clipboard so you can copy/paste text fro
 
 Now, you can log in to your VM. The username is "**user**" and the password for login and admin privilege is "**password**". After logging in, you'll see a `engineering_of_ml_systems` directory, inside which you can see a `pre_materials` directory.
 
-<details>
-    <summary>What if my keyboard has a different layout than Finnish keyboard?</summary>
-    You can follow the instructions in <a href="https://help.ubuntu.com/stable/ubuntu-help/keyboard-layouts.html.en">this article</a> to configure your keyboard layout in Ubuntu. 
-</details>
+*Note*: the default keyboard layout of the VM is Finnish, you can configure the keyboard layouts following [this article](https://help.ubuntu.com/stable/ubuntu-help/keyboard-layouts.html.en).
 
 ---
 
-#### Backup course materials (and assignments)
+#### Backup course materials (Optional)
 It's a good practice a back up the course materials you'll be working on so you won't loss them (especially your work-in-progress assignments) when your VM crashes. Note that your modifications on the files in your VM won't be synchronized to your host so you need to take care of the backup, e.g., using GitHub or some other cloud services like OneDrive or Google Drive. Alternatively, you can also back up the whole virtual machine by creating an OVA file for it, as shown in this [video](https://www.youtube.com/watch?v=9qSTS-RgOA0).
 
 ---
@@ -96,7 +93,10 @@ cd setup
 ```
 Then follow the instructions in [1_create_vm/openstack.ipynb](./setup/1_create_vm/openstack.ipynb) to launch a VM in cPouta, the IaaS cloud service at CSC (Finnish IT center for science).
 
+
 ### 3. Install necessary tools and create a K8s cluster in the cPouta VM
+**Note**: In this and and next part, you'll need to run some scripts in your local environment and the remote cPouta VM. In case you get an error when running the scripts, please first check if your issue is covered [here](./docs/Q&A.md#setting-up-the-mlops-platform-in-cpouta). If not, please pose your issue in the Moodle forum. 
+
 You will use some Ansible scripts to create a K8s cluster in your VM. Simply speaking, Ansible is a tool for running commands/scripts in remote machines from your local machine. 
 
 First, you need to change some configuration so that Ansible knows how to reach your remote VM.
@@ -127,8 +127,6 @@ It will take some time to finish the execution of the Ansible scripts. If you se
 PLAY RECAP *********************************************************************
 128.214.252.130            : ok=18   changed=13   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
-
->In case you get an error when running the Ansible scripts, please first check if your problem is included [here](./docs/Q&A.md#setting-up-the-mlops-platform-in-cpouta). If not, please pose your issue in the Moodle forum. 
 
 After running the Ansible scripts, a K8s cluster has been created in your remote cPouta VM. A file named `mlops_config` has been copied to a directory called `.kube` under your home directory in your local machine. This `mlops_config` file includes the information and credentials needed by kubectl (K8s command line tool) to communicate with the K8s cluster. 
 
@@ -163,7 +161,7 @@ kind-ep-control-plane   Ready    control-plane   16m   v1.24.0
 kind-ep-worker          Ready    <none>          16m   v1.24.0
 kind-ep-worker2         Ready    <none>          16m   v1.24.0
 ```
-#### Back up K8s cluster credentials
+#### Back up K8s cluster credentials (optional)
 Similarly to backing up the course materials, we recommend copying the credentials to somewhere else than your VM. This way, you can access your cluster if you lose access to your VM. You can see the content by 
 ```bash
 cat ~/.kube/config
