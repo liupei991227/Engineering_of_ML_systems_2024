@@ -34,7 +34,7 @@ If you opt to use the OVA file, follow the "[Download and import the OVA file](#
 VirtualBox can be downloaded from [the official website](https://www.virtualbox.org/wiki/Downloads). Version 7 is recommended.
 
 #### 2) Download the OVA file
-The OVA file is provided in Moodle.
+The OVA file can be downloaded through the link provided in Moodle.
 
 #### 3) Import the OVA file in VirtualBox
 1. Open VirtualBox
