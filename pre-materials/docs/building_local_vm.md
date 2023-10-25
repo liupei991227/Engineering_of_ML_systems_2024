@@ -14,7 +14,7 @@ sudo apt install gcc make perl git curl hey jq
 ## 3. Install guest additions
 > Note: If you used the unattended installation, guest additions are already installed and you can skip the rest of this section. 
 
-After launching your VM, you may need to install guest additions, which allow you to make your VM full screen and enable copy-paste between your host system and VM. Click "Devices" in the menu bar on top of the VirtualBox window, then "Insert guest addition CD image". 
+After launching your VM, you may need to install guest additions, which allow you to make your VM full screen and enable copy-paste between your host system and VM. Click "Devices" in the menu bar on top of the VirtualBox window, then "Insert guest addition CD image". Run the following commands to install guest additions.
 ```bash
 cd /media/user/VBox_GAs_7.0.8/
 sudo ./VBoxLinuxAdditions.run
