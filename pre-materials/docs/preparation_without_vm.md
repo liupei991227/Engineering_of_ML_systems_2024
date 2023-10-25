@@ -16,9 +16,5 @@ python3 -m pip install --user ansible
 ```
 5. Install [kubectl (version 1.24.0)](https://kubernetes.io/docs/tasks/tools/#kubectl), which is the tool used to communicate with the K8s cluster.
 
-6. Create a `.kube` directory if it does not exist. This directory will be used to save a configuration file of your K8s cluster that will be created later.
-```bash
-mkdir ~/.kube
-```
 
 After finishing the preparation, continue with the "2. Create a VM in cPouta" section in the [main instructions](../README.md#2-create-a-vm-in-cpouta). 
