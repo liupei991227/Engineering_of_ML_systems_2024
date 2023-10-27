@@ -29,8 +29,8 @@ Computer info:
 [COMPUTER INFO FROM POP UP]
 ```
 
-Our team will watch closely for requests during office hours.
-If we miss the window when you are online, send a message for when would be a suitable time.
+The Helpdesk Cubbli team will watch closely for requests during office hours.
+If they miss the window when you are online, send a message for when would be a suitable time.
 
 ---
 
