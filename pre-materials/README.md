@@ -33,6 +33,8 @@ If you opt to use the OVA file, follow the "[Download and import the OVA file](#
 #### 1) Download VirtualBox
 VirtualBox can be downloaded from [the official website](https://www.virtualbox.org/wiki/Downloads). Version 7 is recommended.
 
+(If you're using Linux and have troubles installing VirtualBox, please refer to [this doc](./docs/qemu_option.md))
+
 #### 2) Download the OVA file
 The OVA file can be downloaded through the link provided in Moodle.
 
@@ -51,6 +53,7 @@ Let's first enable bidirectional shared clipboard so you can copy/paste text fro
 
 <img src="./docs/images/shared-clipboard.png" width=500>
 
+#### 5) Log in to the virtual machine
 Now, you can log in to your VM. The username is "**user**" and the password for login and admin privilege is "**password**". After logging in, you'll see a `engineering_of_ml_systems` directory, inside which you can see a `pre_materials` directory.
 
 *Note*: the default keyboard layout of the VM is Finnish, you can configure the keyboard layouts following [this article](https://help.ubuntu.com/stable/ubuntu-help/keyboard-layouts.html.en).
