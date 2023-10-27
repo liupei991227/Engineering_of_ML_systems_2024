@@ -34,7 +34,7 @@ If we miss the window when you are online, send a message for when would be a su
 
 ---
 
-If you have sudo rights, you can follow the following 
+If you have sudo rights, you can follow the following instructions.
 
 ## Prepare local host
 
@@ -62,11 +62,13 @@ You should logout and login at this point to refresh your groups.
 
 Download the OVA file. An OVA file is basically an archive of various files associated with a VM. Open the archive:
 ```bash
+# This takes a while
 tar xf mlops-eng.ova
 ```
 
 Convert the disk image to suitable format
 ```bash
+# This takes a while
 qemu-img convert mlops-eng-disk001.vmdk mlops-eng-disk001.qcow2
 ```
 
