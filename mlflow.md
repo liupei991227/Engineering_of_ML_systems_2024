@@ -1,5 +1,5 @@
 # Permanently delete MLflow experiments.
-Even though you delete an MLflow experiment on the UI, the experiment still exists in the PostgreSQL database used by MLflow. This will cause errors when you want to create an experiment or record runs under an experiment that has the same name as the experiment you deleted on the UI. To permanently delete an experiment, the following steps are required: 
+Even though you delete an MLflow experiment from the UI, the experiment still exists in the PostgreSQL database used by MLflow. This will cause errors when you want to create an experiment or record runs under an experiment that has the same name as the experiment you deleted from the UI. To permanently delete an experiment, the following steps are required: 
 
 Keep a note of the ID of the experiment you want to delete, then delete the experiment in the UI.
 
@@ -24,3 +24,10 @@ If you have registered models corresponding to the MLflow runs under the deleted
 <img src="./images/delete-all-versions-registered-model.png" />
 or a single version of a registered model:
 <img src="./images/delete-single-version-registered-model.png" />
+
+#### How about permanently deleting MLflow runs?
+Permanently deleting an MLflow run follows the similar steps: keep a note of the run ID -> delete the run from the UI -> shell into the mlflow pod -> run 
+```bash
+mlflow gc --backend-store-uri postgresql://mlflow:KFSg-AYoiPdfRun64z2-w89Kk7z5cJL2IbVvSd3l8Og@postgres:5432/mlflowdb --run-ids <your-deleted-run-id>
+```
+ -> clean the registered model version corresponding to the deleted run. 
