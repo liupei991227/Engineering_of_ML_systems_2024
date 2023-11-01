@@ -41,7 +41,7 @@ If you have sudo rights, you can follow the following instructions.
 First, install the required dependencies.
 When you read these, they might already be installed.
 ```bash
-sudo apt virt-manager ovmf qemu-kvm libvirt-daemon qemu-kvm
+sudo apt install virt-manager ovmf qemu-kvm libvirt-daemon qemu-kvm
 ```
 
 On Cubbli, these are in a package named cubbli-kvm
