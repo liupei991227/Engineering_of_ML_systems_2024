@@ -20,7 +20,7 @@ mlflow gc --backend-store-uri postgresql://mlflow:KFSg-AYoiPdfRun64z2-w89Kk7z5cJ
 # The value given to --experiment-ids can be multiple experiment IDs separated by comma. If experiment-ids are not given, all experiments you deleted on the UI will be permanently deleted. For more info of mlflow gc, check https://mlflow.org/docs/2.3.2/cli.html?highlight=mlflow%20gc#mlflow-gc
 ```
 
-If you have registered models corresponding to the MLflow runs under the deleted experiment, go back to the UI and delete them. You can all versions of a registered model:
+If you have registered models corresponding to the MLflow runs under the deleted experiment, go back to the UI and delete them. You can delete all versions of a registered model:
 <img src="./images/delete-all-versions-registered-model.png" />
 or a single version of a registered model:
 <img src="./images/delete-single-version-registered-model.png" />
