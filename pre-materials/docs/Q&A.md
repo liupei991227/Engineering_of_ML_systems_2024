@@ -1,12 +1,11 @@
 # Possible questions
 
 ## Creating a virtual machine from the provided OVA file
-1. I'm using Mac M1 and can't import the OVA file -> You will need to create a virtual machine from scratch using the Ubuntu 22.04 image. See the instructions [here](./building_local_vm.md). 
+1. I'm using Mac M1 and can't import the OVA file -> You will need to create a virtual machine from scratch using the Ubuntu 22.04 image. See the instructions [here](./building_local_vm.md). Alternatively, you can do the setup locally (i.e., in your host system) by following [this instructions](./preparation_without_vm.md)
 
 1. I get error code "NS_ERROR_INVALID_ARG (0x8007057)" when importing the OVA file -> Please check the following things: 
 - Is your downloaded OVA file complete? A complete ova file should be ~14.4GB.
 - Do you have enough disk space to host the virtual machine? You need ~35GB disk space to accommodate the VM. 
-
 
 ## Using virtual machines created from the provided OVA file
 1. When using the VM in VirtualBox, sometimes I see a reminder of installing some software updates. <br />
@@ -20,7 +19,7 @@ The VM is assigned ~80GB disk space so there should be enough disk space and thi
 
 ## Setting up the MLOps platform in cPouta
 #### Possible errors when doing SSH to a virtual machine in cPouta
-1. Permission denied (publickey): 1) Mismatch between public and private key. Use `ssh-keygen -y -e -f ~/.ssh/<private_key_file>` to check if the generated public key is the same as the public key saved in cPouta. If not, delete the VM and the public key in cPouta, and delete the private key locally, then rerun openstack.ipynb. 2) If the public and private do match each other, try to remove unrelated files from `~/.ssh`, there should be only your private key file(s), `known_hosts` and possibly `known_hosts.old`. 
+1. Permission denied (publickey): 1) Mismatch between public and private key. Use `ssh-keygen -y -e -f ~/.ssh/<private_key_file>` to check if the generated public key is the same as the public key saved in cPouta. If not, (unlock and) delete the VM and the public key in cPouta, and delete the private key locally, then rerun openstack.ipynb. 2) If the public and private do match each other, try to remove unrelated files from `~/.ssh`, there should be only your private key file(s), `known_hosts` and possibly `known_hosts.old`. 
 2. Connection timed out when doing ssh/running the Ansible scripts: Did you add your self to the "ssh" security group?
 3. Too many authentication failures: Use `-o IdentitiesOnly=yes` in the ssh command. (If you have many private keys in ~/.ssh, SSH will try each of them by default. Using "-o IdentitiesOnly=yes" to instruct ssh to only use the file specified in the command). 
 ---
@@ -65,10 +64,6 @@ Error from server (InternalError): error when creating "https://github.com/kserv
 Simply rerun `./install.sh`
 
 ---
-
-
-
-ssh-keygen -y -e -f ~/.ssh/luoyumo2-tutorial
 
 
 
