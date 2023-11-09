@@ -74,7 +74,7 @@ Simply rerun `./install.sh`
 
 ### After setting up the MLOps platform
 I can't access http://mlflow-server.local: Check if your `/etc/hosts`
-have the following lines,
+has the following lines,
 ```
 FLOATING_IP kserve-gateway.local
 FLOATING_IP ml-pipeline-ui.local
