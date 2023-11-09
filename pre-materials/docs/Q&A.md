@@ -25,7 +25,8 @@ The VM is assigned ~80GB disk space so there should be enough disk space and thi
 2. Connection timed out when doing ssh/running the Ansible scripts: 
     1. Did you add your self to the "ssh" security group? In other words, did you run those "openstack server..." commands output by the following code cell?
     <img src="./images/output-openstack-commands.png" />
-    1. If you recreate a VM in cPouta, the floating IP may change => Are you using the correct floating IP?
+    
+    2. If you recreate a VM in cPouta, the floating IP may change => Are you using the correct floating IP?
 3. Too many authentication failures: Use `-o IdentitiesOnly=yes` in the ssh command. (If you have many private keys in ~/.ssh, SSH will try each of them by default. Using "-o IdentitiesOnly=yes" to instruct ssh to only use the file specified in the command). 
 ---
 ### Running Ansible scripts
