@@ -18,10 +18,18 @@ You can follow the instructions in [this article](https://help.ubuntu.com/stable
 The VM is assigned ~80GB disk space so there should be enough disk space and this warning is unlikely to appear. If you do see this warning, we recommend first checking if you have anything that occupies a large disk space. If you do need to increase the disk space of your VM, you can follow the instructions in [this blog](https://blog.surges.eu/virtualbox-how-to-solve-the-issue-with-low-disk-space/).
 
 ## Setting up the MLOps platform in cPouta
+#### I got some error messages when creating a key pair
+Please make sure your secure.yaml is in the correct format and your password does not start with special characters like #%!. If you update scure.yaml, you can restart the kernel of the notebook to ensure it can read the updated content from secure.yaml. 
+```yaml
+clouds:
+  openstack:
+    auth:
+      password: your_csc_password
+```
 #### Possible errors when doing SSH to a virtual machine in cPouta
 1. Permission denied (publickey): 
     1. Mismatch between public and private key. Use `ssh-keygen -y -e -f ~/.ssh/<private_key_file>` to check if the generated public key is the same as the public key saved in cPouta. If not, (unlock and) delete the VM and the public key in cPouta, and delete the private key locally, then rerun openstack.ipynb. 
-    1. If the public and private do match each other, try to remove unrelated files from `~/.ssh`, there should be only your private key file(s), `known_hosts` and possibly `known_hosts.old`. 
+    1. If the public and private keys do match each other, try to remove unrelated files from `~/.ssh`, there should be only your private key file(s), `known_hosts` and possibly `known_hosts.old`. 
 2. Connection timed out when doing ssh/running the Ansible scripts: 
     1. Did you add your self to the "ssh" security group? In other words, did you run those "openstack server..." commands output by the following code cell?
     <img src="./images/output-openstack-commands.png" />
