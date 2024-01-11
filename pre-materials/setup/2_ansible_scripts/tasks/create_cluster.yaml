@@ -33,7 +33,7 @@
   ansible.builtin.shell: |
     export HOST_IP="{{ internal_ip.stdout }}"
     export FLOATING_IP="{{ floating_ip.stdout }}"
-    ./scripts/create_cluster.sh
+    ./scripts/create_cluster.sh "{{ k8s_version }}"
   args:
     chdir: ./install_platform
 

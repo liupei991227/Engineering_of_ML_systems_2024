@@ -5,7 +5,7 @@
 ```bash
 # Create a new conda env and activate it 
 # Note: KServe client SDK (one of the Python packages for communicating with the MLOps platform) has some conflicts with python 3.11 so we fix the version to 3.10
-conda create -n mlops_eng -yf python==3.10 ipykernel
+conda create -n mlops_eng -yf python==3.11 ipykernel
 conda activate mlops_eng
 ```
 Remember to ensure that you are always in the correct Python environment.

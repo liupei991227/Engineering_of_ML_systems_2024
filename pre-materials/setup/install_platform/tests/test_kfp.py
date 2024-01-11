@@ -38,22 +38,22 @@ def run_pipeline(pipeline_file: str, experiment_name: str):
 
     # clean up
     experiment = client.get_experiment(experiment_name=experiment_name)
-    client.delete_experiment(experiment.id)
+    client.delete_experiment(experiment.experiment_id)
 
 
-def _handle_job_end(run_detail: kfp_server_api.ApiRunDetail):
-    finished_run = run_detail.to_dict()["run"]
+def _handle_job_end(run_detail: kfp_server_api.V2beta1Run):
+    finished_run = run_detail.to_dict()
 
     created_at = finished_run["created_at"]
     finished_at = finished_run["finished_at"]
 
     duration_secs = (finished_at - created_at).total_seconds()
 
-    status = finished_run["status"]
+    status = finished_run["state"]
 
     logger.info(f"Run finished in {round(duration_secs)} seconds with status: {status}")
 
-    if status != "Succeeded":
+    if status != "SUCCEEDED":
         raise Exception(f"Run failed: {run_detail.run.id}")
 
 

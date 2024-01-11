@@ -4,3 +4,4 @@
 **.mkv
 **/TODO
 scripts
+**/__pycache__

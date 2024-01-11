@@ -72,7 +72,8 @@ def test_kubeflow_access(kube_config: str):
 
     with open(KUBEFLOW_PERMISSIONS, "r") as f:
         kubeflow_permissions = f.read()
-
+        print(permissions)
+        print(kubeflow_permissions)
         assert permissions == kubeflow_permissions
 
 
@@ -92,7 +93,8 @@ def test_mlflow_access(kube_config: str):
 
     with open(MLFOW_PERMISSIONS, "r") as f:
         mlflow_permissions = f.read()
-
+        print(permissions)
+        print(mlflow_permissions)
         assert permissions == mlflow_permissions
 
 

@@ -4,6 +4,8 @@
   vars:
     install_tools: true
     copy_files: true
+  vars_files:
+    - ./vars.yaml
 
   tasks:
     - name: Install tools

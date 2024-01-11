@@ -33,11 +33,13 @@
       - docker-compose-plugin
     state: present
     update_cache: yes
+
 - name: Create docker group
   group:
     name: docker
     state: present
   become: yes
+
 - name: Add user to the docker group
   user:
     name: ubuntu
@@ -49,11 +51,11 @@
 
 - name: Install Kind
   ansible.builtin.shell: |
-    [ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.19.0/kind-linux-amd64
+    [ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/"{{ kind_version }}"/kind-linux-amd64
     chmod +x ./kind
     sudo mv ./kind /usr/local/bin/kind
 
 - name: Install kubectl
   ansible.builtin.shell: |
-    curl -LO https://dl.k8s.io/release/v1.24.0/bin/linux/amd64/kubectl
+    curl -LO https://dl.k8s.io/release/"{{ k8s_version }}"/bin/linux/amd64/kubectl
     sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl

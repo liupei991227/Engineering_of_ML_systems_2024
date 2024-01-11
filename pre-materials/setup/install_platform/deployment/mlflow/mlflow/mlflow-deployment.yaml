@@ -74,7 +74,7 @@ spec:
                   key: DB_PASSWORD
             - name: BACKEND_STORE_URI
               value: $(DB_DIALECT)://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)
-          image: docker.io/yumol/mlflow:v1  #europe-north1-docker.pkg.dev/silo-terraform1/rd-iml4e-public/mlflow:0.0.4
+          image: docker.io/yumol/mlflow:v2.9.2  #europe-north1-docker.pkg.dev/silo-terraform1/rd-iml4e-public/mlflow:0.0.4
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000

@@ -5,11 +5,18 @@ set -xeoa pipefail
 #######################################################################################
 # Create and configure a cluster with Kind
 #
-# Usage when set up the cluster locally: $ export HOST_IP=127.0.0.1; export FLOATING_IP=127.0.0.1; ./create_cluster.sh
+# Usage when set up the cluster locally: $ export HOST_IP=127.0.0.1; export FLOATING_IP=127.0.0.1; ./create_cluster.sh v1.27.0
 #######################################################################################
 
+if [ -z $1 ]
+then
+  k8s_version=v1.27.0
+else
+  k8s_version=$1
+fi
+
 # create a cluster
-cat <<EOF | kind create cluster --name kind-ep --image=kindest/node:v1.24.0 --config=-
+cat <<EOF | kind create cluster --name kind-ep --image=kindest/node:$k8s_version --config=-
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 networking:
