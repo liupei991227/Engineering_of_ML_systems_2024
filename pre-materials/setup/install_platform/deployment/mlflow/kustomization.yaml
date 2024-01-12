@@ -14,8 +14,6 @@ secretGenerator:
 
 resources:
   - ./mlflow-namespace.yaml
-
-bases:
   - ./postgres
   - ./minio
   - ./mlflow
