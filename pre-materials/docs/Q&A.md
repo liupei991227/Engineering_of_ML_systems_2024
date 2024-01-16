@@ -26,12 +26,8 @@ clouds:
 #### Possible errors when doing SSH to a virtual machine in cPouta
 1. Permission denied (publickey): 
     1. This is probably due to a mismatch between public and private key. Use `ssh-keygen -y -e -f ~/.ssh/<private_key_file>` to check if the generated public key is the same as the public key saved in cPouta. If not, (unlock and) delete the VM and the public key in cPouta, and delete the private key locally, then rerun openstack.ipynb. 
-    1. If the public and private keys do match each other, try to remove unrelated files from `~/.ssh`, there should be only your private key file(s), `known_hosts` and possibly `known_hosts.old`. 
-2. Connection timed out when doing ssh/running the Ansible scripts: 
-    1. Did you add your self to the "ssh" security group? In other words, did you run those "openstack server..." commands output by the following code cell?
-    <img src="./images/output-openstack-commands.png" />
-    
-    2. If you recreate a VM in cPouta, the floating IP may change => Are you using the correct floating IP?
+    1. If the public and private keys do match each other, try to remove unused files from `~/.ssh`, there should be only your private key file(s), `known_hosts` and possibly `known_hosts.old`. 
+2. Connection timed out when doing ssh/running the Ansible scripts: If you recreate a VM in cPouta, the floating IP may change => Are you using the correct floating IP?
 3. Too many authentication failures: Use `-o IdentitiesOnly=yes` in the ssh command. (If you have many private keys in ~/.ssh, SSH will try each of them by default. Using "-o IdentitiesOnly=yes" to instruct ssh to only use the file specified in the command). 
 ---
 ### Possible issues when running Ansible scripts
