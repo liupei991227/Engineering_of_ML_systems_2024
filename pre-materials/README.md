@@ -210,6 +210,7 @@ Now, for example, if you go to [http://mlflow-server.local](http://mlflow-server
 
 #### If you're using VS code...
 You probably have the Pylance extension installed. Please make sure the version of your Pylance extension is 2023.5.40 or earlier as the newer versions have some issues with Jupyter Notebook, which makes running Jupyter Notebook in VS Code super slow. You can check your Pylance version in the following steps: open the extension list using ctrl+shift+x -> search Pylance in the search bar and check the version. 
+
 <img src="./docs/images/pylance-version.png" width=500 />
 
 You can downgrade the Pylance version by clicking the down arrow next to the "Uninstall" button and clicking the "Install Another Version" option. You need to reload VS Code after downgrading the Pylance version. 
