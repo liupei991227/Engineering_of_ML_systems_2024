@@ -1,6 +1,13 @@
 # ML Engineering Course
-* [An overview of the course environment](#an-overview-of-the-course-environment)
+* Before getting started
+    * [An overview of the course environment](#an-overview-of-the-course-environment)
+    * [Apply access to CSC](#apply-access-to-csc)
 * [Set up the course environment](#set-up-the-course-environment)
+    * [Configure your local environment](#1-configure-your-local-environment)
+    * [Create a VM in cPouta](#2-create-a-vm-in-cpouta)
+    * [Install tools and create a K8s cluster in your cPouta VM](#3-install-necessary-tools-and-create-a-k8s-cluster-in-the-cpouta-vm)
+    * [Deploy the MLOps platform](#4-deploy-the-mlops-platform)
+    * [Post-configuration](#5-still-a-bit-more-configurations-in-your-local-environment)
 
 **Note**: You'll see two terms "MLOps" and "MLOps platform" appear multiple times in the following instructions. MLOps stands for machine learning operations. From a high level, it's a set of practices that streamline the processes of training, deploying, and monitoring models. MLOps platform is a software platform that offer different components (tools and services) to let you practice MLOps. You'll learn more about MLOps as the course progresses.
 
@@ -21,67 +28,31 @@ There are two reasons for using this environment in the course:
 1) Some of the MLOps platform components are K8s-based. In other words, a K8s cluster is needed to host some services/tools you will use in this course. A K8s cluster is memory demanding. By using a remote virtual machine to run it, you don't need to worry about the memory limitation of your own computer.  
 2) This environment can simulate real-world working conditions where a remote platform with extensive computational resources is used to train and deploy  ML models, rather than running everything solely on a local machine with limited memory and CPU/GPU resources.
 
+## Apply access to CSC
+As mentioned above, the course environment contains an MLOps platform running in a remote VM. You'll create the remote VM using the cloud service (named cPouta) provided by CSC, known as the Finnish IT center for science. To use CSC, please first apply for the access to it following the link provided on Moodle. 
+
+Please note the following things:
+- It may take a few days for your application to get approved.
+- During the application process, you'll be asked to create a CSC account. **Please start your password with a normal English character (not special characters like !#%&)** to avoid potential issues in the next step where you'll run some code to create a VM in CSC. 
+- After you get the confirmation that you have been added to the CSC project used by the course, Please go to [https://my.csc.fi](https://my.csc.fi/dashboard) -> Click "Projects" in the left panel -> Click the "Engineering of ML systems course" project -> Agree to the general terms & conditions of cPouta as shown below.
+<img src="./docs/images/cpouta-terms.png" width=300 />
+
 
 ## Set up the course environment
 **Warning**: It may take up to a few hours to finish the environment setup, so remember to reserve enough time for this part. 
 
-The instructions below guide you how to set up the course environment. The instructions are based on Linux operating system. We provide a Ubuntu 22.04 LTS OVA file which can be imported as a virtual machine so that you can use the virtual machine as your local environment. We highly recommend using the OVA file as 1) it can mitigate the potential problems caused by different operating systems and 2) the OVA file has the tools required in the course pre-installed. (Of course using the OVA file is not strictly necessary, you can also set up the local environment in your host system if you are familiar with the command lines of Linux and your operating system and ready for debugging issues caused by different operating systems).
+***If you encounter issues during the setup, please first check if your issues are covered in the [common Q&A](./docs/Q&A.md).***
 
-If you opt to use the OVA file, follow the "[Download and import the OVA file](#1-download-and-import-the-ova-file)" instructions below. Otherwise follow the [preparation instructions](./docs/preparation_without_vm.md) and then jump to the "[Create a VM in cPouta](#2-create-a-vm-in-cpouta)" part. 
+The instructions below guide you how to set up the course environment. The instructions are based on Linux operating system. 
 
-### 1. Download and import the OVA file
-#### 1) Download VirtualBox
-VirtualBox can be downloaded from [the official website](https://www.virtualbox.org/wiki/Downloads). Version 7 is recommended.
+### 1. Configure your local environment
+#### If you're using Linux or macOS...
+You can use your host system to set up your local environment as described [here](./docs/local_env_without_vm.md). (The commands in the instruction is based on Linux, feel free to adapt them to fit your need if you're using macOS.)
 
-(If you're using Linux and have troubles installing VirtualBox, please refer to [this doc](./docs/qemu_option.md))
+#### If you're using Windows
+- You can install WSL and then follow the [same instruction](./docs/local_env_without_vm.md) for Linux/maxOS users above.
+- Another option is to use a pre-built image to create Ubuntu VM following [this instruction](./docs/local_env_vm.md). 
 
-#### 2) Download the OVA file
-The OVA file can be downloaded through the link provided in Moodle.
-
-#### 3) Import the OVA file in VirtualBox
-1. Open VirtualBox
-2. Click File -> Import Appliance
-
-<img src="./docs/images/import-ova.png" width=560>
-
-3. Select the downloaded OVA file, click Next -> Finish
-
-#### 4) Start the virtual machine
-After importing the OVA file, you will see a VM created. 
-
-Let's first enable bidirectional shared clipboard so you can copy/paste text from your host to VM (and vice versa). You can do this by going to VirtualBox Manager control panel -> clicking Settings -> General -> Advanced -> setting Shared Clipboard to bidirectional. (You can also set Drag'n'Drop to bidirectional so you can drag and drop files and directories from your host to VM and vice versa, but this functionality may not work for some host operating systems.)
-
-<img src="./docs/images/shared-clipboard.png" width=500>
-
-#### 5) Log in to the virtual machine
-Now, you can log in to your VM. The username is "**user**" and the password for login and admin privilege is "**password**". After logging in, you'll see a `engineering_of_ml_systems` directory, inside which you can see a `pre_materials` directory.
-
-*Note*: the default keyboard layout of the VM is Finnish, you can configure the keyboard layouts following [this article](https://help.ubuntu.com/stable/ubuntu-help/keyboard-layouts.html.en).
-
----
-
-#### Backup course materials (Optional)
-It's a good practice a back up the course materials you'll be working on so you won't loss them (especially your work-in-progress assignments) when your VM crashes. Note that your modifications on the files in your VM won't be synchronized to your host so you need to take care of the backup, e.g., using GitHub or some other cloud services like OneDrive or Google Drive. Alternatively, you can also back up the whole virtual machine by creating an OVA file for it, as shown in this [video](https://www.youtube.com/watch?v=9qSTS-RgOA0).
-
----
-
-In your VM, open a terminal (ctrl+alt+t) and run the following command to switch to the correct Python environment:
-```bash
-conda activate mlops_eng
-```
-
-And go to the `engineering_of_ml_systems/pre-materials` directory:
-```bash
-cd ~/Desktop/engineering_of_ml_systems/pre-materials
-```
-
-You can use Visual Studio Code (VS Code) to open the directory:
-```bash
-code .
-```
-Open the `README.md` and you'll see the same instructions. You can open a preview of a Markdown file by clicking the button shown below in the upper-right corner.
-
-<img src="./docs/images/md-preview-button.png" width=1000/>
 
 ### 2. Create a VM in cPouta
 Now, it is time to start set up the remote MLOps platform. In the instructions below, you will need to run some commands in a terminal. You should run them in your local environment unless separately specified.
@@ -164,8 +135,8 @@ kind-ep-control-plane   Ready    control-plane   16m   v1.24.0
 kind-ep-worker          Ready    <none>          16m   v1.24.0
 kind-ep-worker2         Ready    <none>          16m   v1.24.0
 ```
-#### Back up K8s cluster credentials (optional)
-Similarly to backing up the course materials, we recommend copying the credentials to somewhere else than your VM. This way, you can access your cluster if you lose access to your VM. You can see the content by 
+#### Back up K8s cluster credentials if you're using a Ubuntu VM as your local environment
+We recommend copying the credentials to somewhere else than your VM. This way, you can access your cluster if you lose access to your VM. You can see the content by 
 ```bash
 cat ~/.kube/config
 ```
@@ -215,31 +186,12 @@ kubectl config current-context
 # If the output of the command above is not "kind-kind-ep", configure kubectl to access the correct cluster
 kubectl config use-context kind-kind-ep
 ```
-Expected output: Switched to context "kind-kind-ep".
+
 
 #### Configure /etc/hosts 
 As previously mentioned, the MLOps platform you just deployed provides different services that facilitate different phases in MLOps. You'll need to access these services during the course using their host names. To enable your local environment knows how to resolve these host names into IP addresses, you need to modify the `/etc/hosts` file.
 
-If you're using the provided Ubuntu OVA, you can take a look at the /etc/hosts
-```bash
-cat /etc/hosts
-```
-You should see some entries like below:
-```text
-FLOATING_IP mlflow-server.local
-FLOATING_IP mlflow-minio.local
-...
-```
-The "mlflow-server.local" and "mlflow-minio.local" are the host names you'll use to access the services provided by your MLOps platform. 
-
-Then run the following command
-```bash
-export FLOATING_IP=<replace-this-with-the-floating-ip-of-your-cPouta-VM>
-sudo sed -i "s/FLOATING_IP/$FLOATING_IP/g" /etc/hosts
-```
-This command will replace the text "FLOATING_IP" with the real floating IP of your cPouta VM. After doing this, your local environment knows that it should resolve the host names of the services provided by the MLOps platform into the IP of your cPouta VM where the MLOps platform is running. 
-
-If you don't use the provided OVA, you need to manually add the following entries to your own /etc/hosts file (or the corresponding file in Windows).
+Please add the following entries to `/etc/hosts`
 ```text
 <floating-IP-of-cPouta-VM> kserve-gateway.local
 <floating-IP-of-cPouta-VM> ml-pipeline-ui.local
@@ -249,9 +201,19 @@ If you don't use the provided OVA, you need to manually add the following entrie
 <floating-IP-of-cPouta-VM> prometheus-server.local
 <floating-IP-of-cPouta-VM> grafana-server.local
 ```
-Now if you go to [http://mlflow-server.local](http://mlflow-server.local), you should see a Web page similar to the following:
+
+Now your local environment knows that it should resolve the host names of the services provided by the MLOps platform into the IP of your cPouta VM where the MLOps platform is running. 
+
+Now, for example, if you go to [http://mlflow-server.local](http://mlflow-server.local), you should see a Web page similar to the following:
 
 <img src="./docs/images/mlflow-ui.png" width=800/>
+
+#### If you're using VS code...
+You probably have the Pylance extension installed. Please make sure the version of your Pylance extension is 2023.5.40 or earlier as the newer versions have some issues with Jupyter Notebook, which makes running Jupyter Notebook in VS Code super slow. You can check your Pylance version in the following steps: open the extension list using ctrl+shift+x -> search Pylance in the search bar and check the version. 
+<img src="./docs/images/pylance-version.png" width=500 />
+
+You can downgrade the Pylance version by clicking the down arrow next to the "Uninstall" button and clicking the "Install Another Version" option. You need to reload VS Code after downgrading the Pylance version. 
+
 
 ## Wrap up
 After following the instructions, you've set up the course environment, You've deployed the MLOps platform to a remote VM in cPouta. You've also configured your local environment so that you can access the remote MLOps platform from your local environment. 
