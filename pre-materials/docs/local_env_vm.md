@@ -7,7 +7,7 @@ We provide a Ubuntu 22.04 LTS OVA file which can be imported as a virtual machin
 VirtualBox can be downloaded from [the official website](https://www.virtualbox.org/wiki/Downloads). Version 7 is recommended.
 
 #### 2) Download the OVA file
-The OVA file can be downloaded [here]().
+The OVA file can be downloaded [here](https://helsinkifi-my.sharepoint.com/:u:/g/personal/luoyumo_ad_helsinki_fi/EUVsjA560kVCnMfmkNnHel0Bu3aJbGwr-4pxa9-cS9QQfg?e=1TbLxz).
 
 #### 3) Import the OVA file in VirtualBox
 1. Open VirtualBox
