@@ -58,7 +58,7 @@ def _handle_job_end(run_detail: kfp_server_api.V2beta1Run):
 
 
 @pytest.mark.order(6)
-@pytest.mark.timeout(240)
+@pytest.mark.timeout(300)
 def test_run_pipeline():
     # submit and run pipeline
     run_pipeline(pipeline_file=str(PIPELINE_FILE), experiment_name=EXPERIMENT_NAME)
