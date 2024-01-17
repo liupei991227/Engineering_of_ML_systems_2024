@@ -54,10 +54,10 @@ This command will ask Ansible to skip the tasks of installing required software 
 You can try one of the following two approaches: 
 
 1. Run `./install.sh` after some time, e.g., 1 hour; 
-1. In your cPouta VM, add "?timeout=90s" to the end of the last two links in `~/install_platform/deployment/kfp/kustomization.yaml` yaml, then rerun `./install.sh`.
+1. In your cPouta VM, add "&timeout=90s" to the end of the last two links in `~/install_platform/deployment/kfp/kustomization.yaml` yaml, then rerun `./install.sh`.
 ```text
-- https://github.com/kubeflow/pipelines/manifests/kustomize/cluster-scoped-resources?ref=2.0.5?timeout=90s
-- https://github.com/kubeflow/pipelines/manifests/kustomize/env/platform-agnostic-emissary?ref=2.0.5?timeout=90s
+- https://github.com/kubeflow/pipelines/manifests/kustomize/cluster-scoped-resources?ref=2.0.5&timeout=90s
+- https://github.com/kubeflow/pipelines/manifests/kustomize/env/platform-agnostic-emissary?ref=2.0.5&timeout=90s
 ``` 
 ---
 

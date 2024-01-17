@@ -166,8 +166,6 @@ Installation completed!
 
 Finally, test that MLOps platform is correctly installed
 ```bash
-# First add ~/.local/bin to PATH as the Python packages used in the testing are installed to ~/.local/bin
-export PATH=~/.local/bin:$PATH
 ./scripts/run_tests.sh
 ```
 If you see the following output, all tests have been passed.
