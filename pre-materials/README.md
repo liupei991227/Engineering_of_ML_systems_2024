@@ -31,7 +31,7 @@ There are two reasons for using this environment in the course:
 ## Apply access to CSC
 As mentioned above, the course environment contains an MLOps platform running in a remote VM. You'll create the remote VM using the cloud service (named cPouta) provided by CSC, known as the Finnish IT center for science. To use CSC, please first apply for the access to it following the link provided on Moodle. 
 
-Please note the following things:
+Please note the following:
 - It may take a few days for your application to get approved.
 - During the application process, you'll be asked to create a CSC account. **Please start your password with a normal English character (not special characters like !#%&)** to avoid potential issues in the next step where you'll run some code to create a VM in CSC. 
 - After you get the confirmation that you have been added to the CSC project used by the course, Please go to [https://my.csc.fi](https://my.csc.fi/dashboard) -> Click "Projects" in the left panel -> Click the "Engineering of ML systems course" project -> Agree to the general terms & conditions of cPouta as shown below.

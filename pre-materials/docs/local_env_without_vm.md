@@ -3,7 +3,7 @@
 1. Install Anaconda from [its offcicial website](https://docs.anaconda.com/free/anaconda/install/index.html).
 1. Set up your conda env. 
 ```bash
-conda create -n mlops_eng -yf python==3.11 ipykernel
+conda env create -f mlops_eng_environment.yaml # The YAML file located in the same directory as this doc
 conda activate mlops_eng
 ```
 Remember to ensure that you are always in the correct Python environment.
