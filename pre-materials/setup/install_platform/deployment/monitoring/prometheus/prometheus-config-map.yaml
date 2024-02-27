@@ -54,8 +54,8 @@ data:
           action: keep
           regex: (.+);http-usermetric
         - source_labels: [__meta_kubernetes_pod_name]
-          separator: '-predictor-default-'
-          regex: '(.*)-predictor-default-(.*)'
+          separator: '-predictor-'
+          regex: '(.*)-predictor-(.*)'
           replacement: '${1}'
           target_label: isvc_name
         
