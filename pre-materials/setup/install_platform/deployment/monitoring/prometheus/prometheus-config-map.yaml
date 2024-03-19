@@ -7,9 +7,9 @@ metadata:
 data:
   prometheus.rules: |-
     groups:
-    - name: Prediction latency alert
+    - name: InferenceService
       rules:
-      - alert: High prediction latency
+      - alert: HighPredictionLatency
         expr: histogram_quantile(0.9, rate(revision_app_request_latencies_bucket{isvc_name="wine-quality"}[5m])) > 500
         for: 5s
         labels:

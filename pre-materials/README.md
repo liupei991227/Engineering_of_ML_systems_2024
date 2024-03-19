@@ -47,11 +47,11 @@ The instructions below guide you how to set up the course environment. The instr
 
 ### 1. Configure your local environment
 #### If you're using Linux or macOS...
-You can use your host system to set up your local environment as described [here](./docs/local_env_without_vm.md). (The commands in the instruction is based on Linux, feel free to adapt them to fit your need if you're using macOS.)
+You can use your host system to set up your local environment as described [here](./docs/local_env_without_vm.md). (The commands in the instruction are based on Linux, feel free to adapt them to fit your need if you're using macOS.)
 
 #### If you're using Windows
 - You can install WSL and then follow the [same instruction](./docs/local_env_without_vm.md) for Linux/maxOS users above.
-- Another option is to use a pre-built image to create Ubuntu VM following [this instruction](./docs/local_env_vm.md). 
+- Another option is to use a pre-built image to create Ubuntu VM following [this instruction for using VM](./docs/local_env_vm.md). 
 
 
 ### 2. Create a VM in cPouta

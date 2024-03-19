@@ -38,8 +38,12 @@ git clone https://version.helsinki.fi/luoyumo/engineering_of_ml_systems.git`.
 # You will be asked to enter a username and password, these are your university credentials. 
 ```
 
-Switch to the correct Python environment:
+Set up your conda env. 
 ```bash
+# Under the same directory as this file
+conda env create -f mlops_eng_environment.yaml # The YAML file located in the same directory as this doc
+
+# Switch to the created conda environment
 conda activate mlops_eng
 ```
 

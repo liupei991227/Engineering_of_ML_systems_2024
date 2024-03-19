@@ -1,6 +1,4 @@
-#!/bin/bash
-
-set -e
+set -eo pipefail
 ############################################################
 # Help                                                     #
 ############################################################
@@ -23,7 +21,7 @@ while getopts ":hsr" option; do
          Help
          exit;;
       r) # skip knative install
-	 deploymentMode=kubernetes;;
+         deploymentMode=kubernetes;;
       s) # install knative
          deploymentMode=serverless;;
      \?) # Invalid option
@@ -32,22 +30,35 @@ while getopts ":hsr" option; do
    esac
 done
 
-export ISTIO_VERSION=1.17.2
+export ISTIO_VERSION=1.19.4
+export ISTIO_DIR=istio-${ISTIO_VERSION}
 export KNATIVE_SERVING_VERSION=knative-v1.10.1
 export KNATIVE_ISTIO_VERSION=knative-v1.10.0
-export KSERVE_VERSION=v0.11.2
-export CERT_MANAGER_VERSION=v1.3.0
+export KSERVE_VERSION=v0.12.0
+export CERT_MANAGER_VERSION=v1.9.0
 export SCRIPT_DIR="$( dirname -- "${BASH_SOURCE[0]}" )"
 
-KUBE_VERSION=$(kubectl version --short=true | grep "Server Version" | awk -F '.' '{print $2}')
-if [ ${KUBE_VERSION} -lt 24 ];
+cleanup(){
+  rm -rf deploy-config-patch.yaml
+}
+trap cleanup EXIT
+
+get_kube_version(){
+    kubectl version --short=true 2>/dev/null || kubectl version | awk -F '.' '/Server Version/ {print $2}'
+}
+
+if [ $(get_kube_version) -lt 24 ];
 then
    echo "😱 install requires at least Kubernetes 1.24";
    exit 1;
 fi
 
-curl -L https://istio.io/downloadIstio | sh -
-cd istio-${ISTIO_VERSION}
+if [ -d ${ISTIO_DIR} ]; then
+  echo "Already downloaded ${ISTIO_DIR}"
+else
+  curl -L https://istio.io/downloadIstio | sh -
+fi
+cd ${ISTIO_DIR}
 
 # Create istio-system namespace
 cat <<EOF | kubectl apply -f -
@@ -67,7 +78,6 @@ spec:
     global:
       proxy:
         autoInject: disabled
-      useMCP: false
 
   meshConfig:
     accessLogFile: /dev/stdout
@@ -88,14 +98,12 @@ spec:
             memory: 200Mi
         podAnnotations:
           cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
-        env:
-        - name: PILOT_ENABLE_CONFIG_DISTRIBUTION_TRACKING
-          value: "false"
 EOF
 
 bin/istioctl manifest apply -f istio-minimal-operator.yaml -y --readiness-timeout 10m0s;
 
 echo "😀 Successfully installed Istio"
+rm -rf ${ISTIO_DIR}
 
 # Install Knative
 if [ $deploymentMode = serverless ]; then
@@ -122,10 +130,24 @@ if [ ${MAJOR_VERSION} -eq 0 ] && [ ${MINOR_VERSION} -le 6 ]; then KSERVE_CONFIG=
 # Retry inorder to handle that it may take a minute or so for the TLS assets required for the webhook to function to be provisioned
 kubectl apply -f https://github.com/kserve/kserve/releases/download/${KSERVE_VERSION}/${KSERVE_CONFIG}
 
-# Install KServe built-in servingruntimes
+# Install KServe built-in servingruntimes and storagecontainers
 kubectl wait --for=condition=ready pod -l control-plane=kserve-controller-manager -n kserve --timeout=300s
-kubectl apply -f https://github.com/kserve/kserve/releases/download/${KSERVE_VERSION}/kserve-runtimes.yaml
-echo "😀 Successfully installed KServe"
 
-# Clean up
-rm -rf istio-${ISTIO_VERSION}
+if [ ${MAJOR_VERSION} -eq 0 ] && [ ${MINOR_VERSION} -le 11 ]; then
+    kubectl apply -f https://github.com/kserve/kserve/releases/download/${KSERVE_VERSION}/kserve-runtimes.yaml
+else
+    kubectl apply -f https://github.com/kserve/kserve/releases/download/${KSERVE_VERSION}/kserve-cluster-resources.yaml
+fi
+
+# Patch default deployment mode for raw deployment
+if [ $deploymentMode = kubernetes ]; then
+cat <<EOF > deploy-config-patch.yaml
+data:
+  deploy: |
+    {
+      "defaultDeploymentMode": "RawDeployment"
+    }
+EOF
+kubectl patch cm inferenceservice-config -n kserve --type=merge --patch-file=deploy-config-patch.yaml
+fi
+echo "😀 Successfully installed KServe"
