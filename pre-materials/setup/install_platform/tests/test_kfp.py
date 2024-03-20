@@ -1,4 +1,3 @@
-import subprocess
 import logging
 import pathlib
 import kfp
@@ -16,12 +15,37 @@ PIPELINE_FILE = pathlib.Path(__file__).parent / "resources" / "kfp" / "pipeline.
 #IMAGE_NAME = "kfp-test-img"
 EXPERIMENT_NAME = "Test Experiment"
 
+@kfp.dsl.component(
+    base_image="python:3.11",
+    packages_to_install=["mlflow==2.9.2"],
+)
+def mlflow_train():
+    import mlflow
 
-def run_pipeline(pipeline_file: str, experiment_name: str):
+    MLFLOW_TRACKING_URI = "http://mlflow.mlflow.svc.cluster.local:5000"
+    MLFLOW_EXPERIMENT_NAME = "Kubeflow Pipeline test run"
+
+    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+    experiment = mlflow.get_experiment_by_name(MLFLOW_EXPERIMENT_NAME)
+
+    if experiment is None:
+        experiment_id = mlflow.create_experiment(MLFLOW_EXPERIMENT_NAME)
+    else:
+        experiment_id = experiment.experiment_id
+
+    with mlflow.start_run(experiment_id=experiment_id) as run:
+        mlflow.log_param("my", "param")
+        mlflow.log_metric("score", 100)
+
+@kfp.dsl.pipeline()
+def my_pipeline():
+    mlflow_train()
+
+def run_pipeline(experiment_name: str):
     client = kfp.Client(host=None)
 
-    created_run = client.create_run_from_pipeline_package(
-        pipeline_file=pipeline_file,
+    created_run = client.create_run_from_pipeline_func(
+        pipeline_func=my_pipeline,
         enable_caching=False,
         arguments={},
         run_name="kfp_test_run",
@@ -61,4 +85,4 @@ def _handle_job_end(run_detail: kfp_server_api.V2beta1Run):
 @pytest.mark.timeout(300)
 def test_run_pipeline():
     # submit and run pipeline
-    run_pipeline(pipeline_file=str(PIPELINE_FILE), experiment_name=EXPERIMENT_NAME)
+    run_pipeline(experiment_name=EXPERIMENT_NAME)
