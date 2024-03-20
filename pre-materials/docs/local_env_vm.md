@@ -17,24 +17,28 @@ The OVA file can be downloaded [here](https://helsinkifi-my.sharepoint.com/:u:/g
 
 3. Select the downloaded OVA file, click Next -> Finish
 
-#### 4) Start the virtual machine
+### 2. Start the virtual machine
 After importing the OVA file, you will see a VM created. 
 
 Let's first enable bidirectional shared clipboard so you can copy/paste text from your host to VM (and vice versa). You can do this by going to VirtualBox Manager control panel -> clicking Settings -> General -> Advanced -> setting Shared Clipboard to bidirectional. (You can also set Drag'n'Drop to bidirectional so you can drag and drop files and directories from your host to VM and vice versa, but this functionality may not work for some host operating systems.)
 
 <img src="./images/shared-clipboard.png" width=500>
 
-#### 5) Log in to the virtual machine
-Now, you can log in to your VM. The username is "**user**" and the password for login and admin privilege is "**password**". 
+If your screen starts flickering, try resizing your virtual screen to a larger resolution:
+
+<img src="./images/reset_screen_resolution.png" >
+
+### 3. Log in to the virtual machine
+Now, you can log in to your VM. The username is "**user**" and the password for admin privilege is "**password**". 
 
 *Note*: the default keyboard layout of the VM is Finnish, you can configure the keyboard layouts following [this article](https://help.ubuntu.com/stable/ubuntu-help/keyboard-layouts.html.en).
 
-#### 6) Download the course repository
+### 4. Download the course repository
 ---
 
 In your VM, open a terminal (ctrl+alt+t) and run the following command to download the course repository:
 ```bash
-git clone https://version.helsinki.fi/luoyumo/engineering_of_ml_systems.git`. 
+git clone https://version.helsinki.fi/luoyumo/engineering_of_ml_systems.git`
 # You will be asked to enter a username and password, these are your university credentials. 
 ```
 
