@@ -8,3 +8,4 @@ resources:
 - aws-secret.yaml
 - https://github.com/kubeflow/pipelines/manifests/kustomize/cluster-scoped-resources?ref=2.0.5&timeout=90s
 - https://github.com/kubeflow/pipelines/manifests/kustomize/env/platform-agnostic-emissary?ref=2.0.5&timeout=90s
+# ?ref=2.0.5 specifies the version of the Kubeflow Pipelines to be installed. ?timeout=90s specifies the timeout for the download of the manifests.
