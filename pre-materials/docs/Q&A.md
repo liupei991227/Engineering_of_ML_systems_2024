@@ -2,7 +2,7 @@
 
 ## Using a virtual machine created from the provided OVA file
 1. I get error code "NS_ERROR_INVALID_ARG (0x8007057)" when importing the OVA file -> Please check the following things: 
-- Is your downloaded OVA file complete? A complete ova file should be ~14.4GB.
+- Is your downloaded OVA file complete? A complete ova file should be ~11GB.
 - Do you have enough disk space to host the virtual machine? You need ~35GB disk space to accommodate the VM. 
 
 2. When using the VM in VirtualBox, sometimes I see a reminder of installing some software updates. <br />
