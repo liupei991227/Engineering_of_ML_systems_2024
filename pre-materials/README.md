@@ -198,9 +198,24 @@ Please add the following entries to `/etc/hosts`
 <floating-IP-of-cPouta-VM> mlflow-minio.local
 <floating-IP-of-cPouta-VM> prometheus-server.local
 <floating-IP-of-cPouta-VM> grafana-server.local
+<floating-IP-of-cPouta-VM> evidently-monitor-ui.local
 ```
 
 Now your local environment knows that it should resolve the host names of the services provided by the MLOps platform into the IP of your cPouta VM where the MLOps platform is running. 
+
+You can use the following command to check if you've configured your `etc/hosts` file correctly:
+```bash
+# Make sure you're using the mlops_eng conda environment
+conda activate mlops_eng
+
+# Suppose you're under the same directory as this file, run the test 
+# and you should see one test pass. 
+pytest setup/test_remote_connection.py
+```
+If you see an error like below, please re-check your `etc/hosts` file.
+```text
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='...', port=80): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ccaf102b1d0>: Failed to establish a new connection: [Errno -2] Name or service not known'))
+``` 
 
 Now, for example, if you go to [http://mlflow-server.local](http://mlflow-server.local), you should see a Web page similar to the following:
 
