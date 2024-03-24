@@ -3,9 +3,9 @@
 numpy~=1.26.0
 pandas~=1.5.3
 scikit-learn~=1.3.2
-mlflow~=2.9.2
+mlflow==2.9.2
 minio~=7.1.3
-kfp~=2.0.1
+kfp==2.0.1
 boto3~=1.26.146
 pytest~=7.1.3
 pytest-order~=1.0.1
@@ -13,4 +13,5 @@ pytest-timeout==2.1.0
 jq~=1.3.0
 python-dotenv~=0.21.0
 envsubst~=0.1.5
-kserve~=0.12.0
+kserve==0.12.0
+ray == 2.9.3 # Fix the ray version, ray 2.10 doesn't work with kserve

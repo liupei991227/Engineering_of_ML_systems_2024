@@ -4,4 +4,6 @@ resources:
   - monitoring-namespace.yaml
   - prometheus/
   - grafana/
+  - evidently-monitor/
+  # We don't need Prometheus Pushgateway for now but its yaml files are still here in case we need it in the future
   #- prometheus-pushgateway/
