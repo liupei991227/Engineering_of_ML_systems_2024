@@ -11,5 +11,5 @@ You won't need to use Docker to build containers in this course. If you'd like t
 ## K8s
 The MLOps platform you just deployed consists of different components that help you manage different phases on ML engineering, such as model training, serving, and monitoring. The MLOps platform is modular, with multiple components running inside multiple containers. We run the platform atop K8s, which is an open-source container orchestrating platform to manage the life cycles of all these components and the communication between them, simplifying the management of our complex MLOps platform.
 
-Please refer to [this notebook](./intro_to_k8s/k8s_inro.ipynb) for further introduction of K8s. 
+Please refer to [this notebook](./intro_to_k8s/k8s_intro.ipynb) for further introduction of K8s. 
 
