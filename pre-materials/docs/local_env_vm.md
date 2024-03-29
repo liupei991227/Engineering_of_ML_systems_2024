@@ -38,7 +38,7 @@ Now, you can log in to your VM. The username is "**user**" and the password for 
 
 In your VM, open a terminal (ctrl+alt+t) and run the following command to download the course repository:
 ```bash
-git clone https://version.helsinki.fi/luoyumo/engineering_of_ml_systems.git`
+git clone https://version.helsinki.fi/luoyumo/engineering_of_ml_systems.git
 # You will be asked to enter a username and password, these are your university credentials. 
 ```
 

@@ -50,8 +50,8 @@ The instructions below guide you how to set up the course environment. The instr
 You can use your host system to set up your local environment as described [here](./docs/local_env_without_vm.md). (The commands in the instruction are based on Linux, feel free to adapt them to fit your need if you're using macOS.)
 
 #### If you're using Windows
+- We recommend using a pre-built image to create Ubuntu VM following [this instruction for using VM](./docs/local_env_vm.md).
 - You can install WSL and then follow the [same instruction](./docs/local_env_without_vm.md) for Linux/maxOS users above.
-- Another option is to use a pre-built image to create Ubuntu VM following [this instruction for using VM](./docs/local_env_vm.md). 
 
 
 ### 2. Create a VM in cPouta
@@ -63,6 +63,7 @@ In this instruction, you will need to run a Jupyter notebook and commands in a t
 
 Go to the setup directory
 ```bash
+# Run the command under "pre-materials" directory (the same directory as this file)
 cd setup
 ```
 Then follow the instructions in [1_create_vm/openstack.ipynb](./setup/1_create_vm/openstack.ipynb) to launch a VM in cPouta, the IaaS cloud service at CSC (Finnish IT center for science).
@@ -203,7 +204,7 @@ Please add the following entries to `/etc/hosts`
 
 Now your local environment knows that it should resolve the host names of the services provided by the MLOps platform into the IP of your cPouta VM where the MLOps platform is running. 
 
-You can use the following command to check if you've configured your `etc/hosts` file correctly:
+On your local environment, you can use the following command to check if you've configured your `etc/hosts` file correctly:
 ```bash
 # Make sure you're using the mlops_eng conda environment
 conda activate mlops_eng
