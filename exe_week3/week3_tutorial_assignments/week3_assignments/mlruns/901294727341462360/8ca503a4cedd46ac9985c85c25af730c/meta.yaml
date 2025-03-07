@@ -1,0 +1,16 @@
+artifact_uri: /Users/liupei/Desktop/engineering_of_ml_systems/exe_week3/week3_tutorial_assignments/week3_assignments/mlruns/901294727341462360/8ca503a4cedd46ac9985c85c25af730c/artifacts
+deleted_time: 1731921152022
+end_time: 1731920769995
+entry_point_name: ''
+experiment_id: '901294727341462360'
+lifecycle_stage: deleted
+run_id: 8ca503a4cedd46ac9985c85c25af730c
+run_name: '10'
+run_uuid: 8ca503a4cedd46ac9985c85c25af730c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1731920769984
+status: 3
+tags: []
+user_id: liupei

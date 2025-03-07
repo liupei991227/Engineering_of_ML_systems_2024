@@ -1,0 +1,19 @@
+artifact_path: Week1LgbmBikeDemand
+flavors:
+  lightgbm:
+    code: null
+    data: model.pkl
+    lgb_version: 4.5.0
+    model_class: lightgbm.sklearn.LGBMRegressor
+  python_function:
+    data: model.pkl
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.lightgbm
+    python_version: 3.10.15
+mlflow_version: 2.17.2
+model_size_bytes: 509299
+model_uuid: 59a4047eaf804456b81f9a82168de615
+run_id: a13a27f686924820b9ab43e5f935c982
+utc_time_created: '2024-11-06 11:39:48.064561'

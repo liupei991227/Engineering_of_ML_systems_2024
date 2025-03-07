@@ -1,0 +1,221 @@
+# PIPELINE DEFINITION
+# Name: monitor
+# Description: Generate an Evidently Report and TestSuite for a given production dataset and push them to a given Evidently Workspace.
+# Inputs:
+#    column_mapping_dict: dict
+#    evidently_monitor_uri: str
+#    evidently_project_id: str
+#    mlflow_run_id: str
+#    mlflow_s3_endpoint_url: str
+#    mlflow_tracking_uri: str
+#    prod_dataset: system.Dataset
+#    prod_model_version: str
+#    quarter: int
+#    year: int
+components:
+  comp-monitor:
+    executorLabel: exec-monitor
+    inputDefinitions:
+      artifacts:
+        prod_dataset:
+          artifactType:
+            schemaTitle: system.Dataset
+            schemaVersion: 0.0.1
+          description: An input of type Dataset where the production DataFrame (inputs+outputs+ground
+            truth)
+      parameters:
+        column_mapping_dict:
+          description: A dictionary containing the configuration of the column mapping
+          parameterType: STRUCT
+        evidently_monitor_uri:
+          description: The URL of the remote Evidently Workspace
+          parameterType: STRING
+        evidently_project_id:
+          description: The ID of the Evidently Project where the reports and test
+            suites should be stored
+          parameterType: STRING
+        mlflow_run_id:
+          description: ID of the MLflow Run that trains the on-production model
+          parameterType: STRING
+        mlflow_s3_endpoint_url:
+          description: URL of MLflow's artifact store
+          parameterType: STRING
+        mlflow_tracking_uri:
+          description: URI of MLflow's tracking server
+          parameterType: STRING
+        prod_model_version:
+          description: The on-production model version to be monitored
+          parameterType: STRING
+        quarter:
+          parameterType: NUMBER_INTEGER
+        year:
+          parameterType: NUMBER_INTEGER
+deploymentSpec:
+  executors:
+    exec-monitor:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - monitor
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet     --no-warn-script-location 'mlflow==2.9.2'\
+          \ 'evidently==0.4.15' 'boto3~=1.34.50' 'kfp==2.0.1' && \"$0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          python3 -m kfp.components.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef monitor(\n        evidently_monitor_uri: str, \n        evidently_project_id:\
+          \ str,\n        column_mapping_dict: Dict[str, Any], \n        prod_dataset:\
+          \ Input[Dataset], \n        prod_model_version: str,\n        mlflow_tracking_uri:\
+          \ str,\n        mlflow_s3_endpoint_url: str, \n        mlflow_run_id: str,\n\
+          \        year: int,\n        quarter: int\n    ):\n    \"\"\"\n    Generate\
+          \ an Evidently Report and TestSuite for a given production dataset and push\
+          \ them to a given Evidently Workspace.\n    Args:\n        evidently_monitor_uri:\
+          \ The URL of the remote Evidently Workspace\n        evidently_project_id:\
+          \ The ID of the Evidently Project where the reports and test suites should\
+          \ be stored\n        column_mapping_dict: A dictionary containing the configuration\
+          \ of the column mapping\n        prod_dataset: An input of type Dataset\
+          \ where the production DataFrame (inputs+outputs+ground truth)\n       \
+          \ prod_model_version: The on-production model version to be monitored\n\
+          \        mlflow_tracking_uri: URI of MLflow's tracking server\n        mlflow_s3_endpoint_url:\
+          \ URL of MLflow's artifact store\n        mlflow_run_id: ID of the MLflow\
+          \ Run that trains the on-production model\n        year and quarter: The\
+          \ time range of the data to be monitored\n    \"\"\"\n\n    from typing\
+          \ import List\n    import pandas as pd\n    import mlflow\n    from evidently.report\
+          \ import Report\n    from evidently.test_suite import TestSuite\n    from\
+          \ evidently.metric_preset import DataDriftPreset, TargetDriftPreset, RegressionPreset\n\
+          \    from evidently.tests import TestValueMAE\n    from evidently import\
+          \ ColumnMapping\n    from evidently.ui.remote import RemoteWorkspace\n \
+          \   from datetime import datetime\n    import os\n\n    # This is the column\
+          \ mapping used by the prep_report and prep_regression_test functions\n \
+          \   column_mapping = ColumnMapping(**column_mapping_dict)\n\n    def prep_report(prod_df:\
+          \ pd.DataFrame, ref_df: pd.DataFrame, tags: List[str], timestamp: datetime)\
+          \ -> Report:\n        ### START CODE HERE\n        report = Report(\n  \
+          \          metrics=[\n                RegressionPreset(),  # Handles regression\
+          \ performance metrics\n                TargetDriftPreset(),  # Monitors\
+          \ target drift\n                DataDriftPreset(),  # Monitors data drift\n\
+          \            ],\n            tags=tags,  # Add tags directly to the Report\n\
+          \            timestamp=timestamp  # Add timestamp directly to the Report\n\
+          \        )\n        report.run(reference_data=ref_df, current_data=prod_df,\
+          \ column_mapping=column_mapping)\n        return report\n\n        ### END\
+          \ CODE HERE\n\n\n    def prep_regression_test(prod_df: pd.DataFrame, ref_df:\
+          \ pd.DataFrame, tags: List[str], timestamp: datetime) -> TestSuite:\n  \
+          \      ### START CODE HERE\n        test_suite = TestSuite(\n          \
+          \  tests=[TestValueMAE(lt=40000)],  # The test will fail if MAE is greater\
+          \ than 40,000\n            tags=tags,  # Add tags to the TestSuite\n   \
+          \         timestamp=timestamp  # Add timestamp to the TestSuite\n      \
+          \  )\n        test_suite.run(reference_data=ref_df, current_data=prod_df,\
+          \ column_mapping=column_mapping)\n        return test_suite\n        ###\
+          \ END CODE HERE\n\n    prod_df = pd.read_parquet(prod_dataset.path)\n\n\
+          \    mlflow.set_tracking_uri(mlflow_tracking_uri)\n    os.environ[\"MLFLOW_S3_ENDPOINT_URL\"\
+          ] = mlflow_s3_endpoint_url\n\n    # TODO: Download the reference dataset\
+          \ (a Parquet file) and load it into a DataFrame. \n    # The dataset was\
+          \ uploaded to MinIO (under the MLflow Run that trains the on-production\
+          \ model).\n    reference_data_artifact_path = \"reference_data\" # This\
+          \ is the run-relative artifact path of the reference dataset\n\n    ###\
+          \ START CODE HERE\n    reference_data_artifact_path = \"reference_data\"\
+          \  # The artifact path to the reference dataset in the MLflow run\n    reference_data_path\
+          \ = mlflow.artifacts.download_artifacts(\n        run_id=mlflow_run_id,\
+          \ artifact_path=reference_data_artifact_path\n    )\n    ref_df = pd.read_parquet(reference_data_path)\n\
+          \n    ### END CODE HERE\n\n    time_tag = f\"{year}-quarter{quarter}\"\n\
+          \n    # Tags of the Evidently Report and Test Suite\n    tags = [time_tag,\
+          \ prod_model_version]\n\n    # Timestamp of the Evidently Report and Test\
+          \ Suite\n    timestamp = None\n    if quarter < 4:\n        timestamp =\
+          \ datetime(year=year, month=quarter*3+1, day=1)\n    elif quarter == 4:\n\
+          \        timestamp = datetime(year=year+1, month=1, day=1)\n\n    # TODO:\
+          \ Generate Evidently Report and Test Suite\n    ### START CODE HERE\n  \
+          \  # Generate Evidently Report and Test Suite\n    report = prep_report(prod_df,\
+          \ ref_df, tags, timestamp)\n    test_suite = prep_regression_test(prod_df,\
+          \ ref_df, tags, timestamp)\n\n    ### END CODE HERE\n\n    # Create a workspace\
+          \ instance (like a connection) to the remote Evidently Workspace \n    workspace\
+          \ = RemoteWorkspace(evidently_monitor_uri)\n\n    # TODO: Upload the Report\
+          \ and TestSuite to the remote Evidently Workspace, just as you upload them\
+          \ to a local Workspace\n\n    ### START CODE HERE\n    # Upload the Report\
+          \ and TestSuite to the remote Evidently Workspace\n    workspace.add_report(evidently_project_id,\
+          \ report)  # Upload the report\n    workspace.add_test_suite(evidently_project_id,\
+          \ test_suite)  # Upload the test suite\n\n    ### END CODE HERE\n\n"
+        image: python:3.11
+pipelineInfo:
+  name: monitor
+root:
+  dag:
+    tasks:
+      monitor:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-monitor
+        inputs:
+          artifacts:
+            prod_dataset:
+              componentInputArtifact: prod_dataset
+          parameters:
+            column_mapping_dict:
+              componentInputParameter: column_mapping_dict
+            evidently_monitor_uri:
+              componentInputParameter: evidently_monitor_uri
+            evidently_project_id:
+              componentInputParameter: evidently_project_id
+            mlflow_run_id:
+              componentInputParameter: mlflow_run_id
+            mlflow_s3_endpoint_url:
+              componentInputParameter: mlflow_s3_endpoint_url
+            mlflow_tracking_uri:
+              componentInputParameter: mlflow_tracking_uri
+            prod_model_version:
+              componentInputParameter: prod_model_version
+            quarter:
+              componentInputParameter: quarter
+            year:
+              componentInputParameter: year
+        taskInfo:
+          name: monitor
+  inputDefinitions:
+    artifacts:
+      prod_dataset:
+        artifactType:
+          schemaTitle: system.Dataset
+          schemaVersion: 0.0.1
+        description: An input of type Dataset where the production DataFrame (inputs+outputs+ground
+          truth)
+    parameters:
+      column_mapping_dict:
+        description: A dictionary containing the configuration of the column mapping
+        parameterType: STRUCT
+      evidently_monitor_uri:
+        description: The URL of the remote Evidently Workspace
+        parameterType: STRING
+      evidently_project_id:
+        description: The ID of the Evidently Project where the reports and test suites
+          should be stored
+        parameterType: STRING
+      mlflow_run_id:
+        description: ID of the MLflow Run that trains the on-production model
+        parameterType: STRING
+      mlflow_s3_endpoint_url:
+        description: URL of MLflow's artifact store
+        parameterType: STRING
+      mlflow_tracking_uri:
+        description: URI of MLflow's tracking server
+        parameterType: STRING
+      prod_model_version:
+        description: The on-production model version to be monitored
+        parameterType: STRING
+      quarter:
+        parameterType: NUMBER_INTEGER
+      year:
+        parameterType: NUMBER_INTEGER
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.0.1

@@ -1,0 +1,152 @@
+# PIPELINE DEFINITION
+# Name: combine-ground-truth
+# Description: Combine ground truth with the model inputs+outputs based on the "request_id" index
+# Inputs:
+#    ground_truth_bucket_name: str
+#    inputs_outputs_bucket_name: str
+#    quarter: int
+#    s3_endpoint_url: str
+#    year: int
+# Outputs:
+#    prod_data: system.Dataset
+components:
+  comp-combine-ground-truth:
+    executorLabel: exec-combine-ground-truth
+    inputDefinitions:
+      parameters:
+        ground_truth_bucket_name:
+          description: Name of the bucket where ground truth is stored
+          parameterType: STRING
+        inputs_outputs_bucket_name:
+          description: Name of the bucket where model inputs+outputs data is stored
+          parameterType: STRING
+        quarter:
+          parameterType: NUMBER_INTEGER
+        s3_endpoint_url:
+          description: The URL of the MinIO service where the data is stored
+          parameterType: STRING
+        year:
+          parameterType: NUMBER_INTEGER
+    outputDefinitions:
+      artifacts:
+        prod_data:
+          artifactType:
+            schemaTitle: system.Dataset
+            schemaVersion: 0.0.1
+deploymentSpec:
+  executors:
+    exec-combine-ground-truth:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - combine_ground_truth
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet     --no-warn-script-location 'pandas~=2.2.1'\
+          \ 'minio~=7.1.17' 'fastparquet~=2023.10.1' 'kfp==2.0.1' && \"$0\" \"$@\"\
+          \n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          python3 -m kfp.components.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef combine_ground_truth(\n    year: int, \n    quarter: int, \n\
+          \    s3_endpoint_url: str, \n    inputs_outputs_bucket_name: str,\n    ground_truth_bucket_name:\
+          \ str,\n    prod_data: Output[Dataset]\n):\n    \"\"\"\n    Combine ground\
+          \ truth with the model inputs+outputs based on the \"request_id\" index\n\
+          \    Args: \n        year and quarter: The time range of the data to be\
+          \ combined\n        s3_endpoint_url: The URL of the MinIO service where\
+          \ the data is stored\n        inputs_outputs_bucket_name: Name of the bucket\
+          \ where model inputs+outputs data is stored\n        ground_truth_bucket_name:\
+          \ Name of the bucket where ground truth is stored\n        prod_data: The\
+          \ output of type Dataset that the combined data (inputs+outputs+ground truth\
+          \ in a Parquet file) should be saved\n    \"\"\"\n    from minio import\
+          \ Minio\n    import pandas as pd\n    import os\n    import io\n\n\n   \
+          \ os.environ[\"MLFLOW_S3_ENDPOINT_URL\"] = mlflow_s3_endpoint_url\
+          \n\n    def read_df_from_s3(bucket_name: str, object_name: str, function:\
+          \ Callable, **kwargs) -> pd.DataFrame:\n        obj = minio_client.get_object(\n\
+          \            bucket_name=bucket_name, object_name=object_name)\n       \
+          \ df = function(io.BytesIO(obj.data), **kwargs)\n        return df\n\n \
+          \   minio_client = Minio(\n        endpoint=s3_endpoint_url.split(\"://\"\
+          )[1],\n        access_key=os.getenv(\"AWS_ACCESS_KEY_ID\"),\n        secret_key=os.getenv(\"\
+          AWS_SECRET_ACCESS_KEY\"),\n        secure=False\n    )\n\n    inputs_outputs_filename\
+          \ = f\"{year}_{quarter}.csv\"\n    ground_truth_filename = f\"{year}_{quarter}_y.csv\"\
+          \n\n    # inputs-outputs DataFrame\n    inputs_outputs_df = read_df_from_s3(\n\
+          \        bucket_name=inputs_outputs_bucket_name, object_name=inputs_outputs_filename,\
+          \ function=pd.read_csv, index_col=\"request_id\")\n    # Ground truth DataFrame\n\
+          \    ground_truth_df = read_df_from_s3(bucket_name=ground_truth_bucket_name,\n\
+          \                                      object_name=ground_truth_filename,\
+          \ function=pd.read_csv, index_col=\"request_id\")\n\n    ### START CODE\
+          \ HERE\n    # Combine the dataframes on 'request_id' and reset index\n \
+          \   combined_df = inputs_outputs_df.join(ground_truth_df, how=\"inner\"\
+          )\n    combined_df.reset_index(drop=True, inplace=True)\n\n    # Save the\
+          \ combined DataFrame as a Parquet file\n    output_filename = f\"prod_data_{year}_{quarter}.parquet\"\
+          \n\n    combined_df.to_parquet(output_filename, index=False, engine='fastparquet')\n\
+          \n    # Check if prod_data is a mock and handle accordingly\n    if isinstance(prod_data,\
+          \ Dataset):\n        prod_data.save(output_filename)  # Save to the output\
+          \ Dataset\n\n    # Return the combined DataFrame to be used in further steps\n\
+          \    return combined_df\n\n\n    ### END CODE HERE\n\n"
+        image: python:3.11
+pipelineInfo:
+  name: combine-ground-truth
+root:
+  dag:
+    outputs:
+      artifacts:
+        prod_data:
+          artifactSelectors:
+          - outputArtifactKey: prod_data
+            producerSubtask: combine-ground-truth
+    tasks:
+      combine-ground-truth:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-combine-ground-truth
+        inputs:
+          parameters:
+            ground_truth_bucket_name:
+              componentInputParameter: ground_truth_bucket_name
+            inputs_outputs_bucket_name:
+              componentInputParameter: inputs_outputs_bucket_name
+            quarter:
+              componentInputParameter: quarter
+            s3_endpoint_url:
+              componentInputParameter: s3_endpoint_url
+            year:
+              componentInputParameter: year
+        taskInfo:
+          name: combine-ground-truth
+  inputDefinitions:
+    parameters:
+      ground_truth_bucket_name:
+        description: Name of the bucket where ground truth is stored
+        parameterType: STRING
+      inputs_outputs_bucket_name:
+        description: Name of the bucket where model inputs+outputs data is stored
+        parameterType: STRING
+      quarter:
+        parameterType: NUMBER_INTEGER
+      s3_endpoint_url:
+        description: The URL of the MinIO service where the data is stored
+        parameterType: STRING
+      year:
+        parameterType: NUMBER_INTEGER
+  outputDefinitions:
+    artifacts:
+      prod_data:
+        artifactType:
+          schemaTitle: system.Dataset
+          schemaVersion: 0.0.1
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.0.1

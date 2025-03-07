@@ -1,0 +1,25 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: bike-lgbm-1
+  namespace: kserve-inference
+spec:
+  predictor:
+    serviceAccountName: kserve-sa
+    ### START CONF HERE
+    lightgbm:
+      storageUri: "s3://mlflow/7/c6593f7cd39f4444acd8581588de91af/artifacts/lgbm-bike"
+    ### END CONF HERE
+---
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: bike-lgbm-2
+  namespace: kserve-inference
+spec:
+  predictor:
+    serviceAccountName: kserve-sa
+    ### START CONF HERE
+    lightgbm:
+      storageUri: "s3://mlflow/7/46df22f2a80042468a81d304db06896b/artifacts/lgbm-bike"
+    ### END CONF HERE

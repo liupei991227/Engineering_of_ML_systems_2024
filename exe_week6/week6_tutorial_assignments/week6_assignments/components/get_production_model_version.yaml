@@ -1,0 +1,122 @@
+# PIPELINE DEFINITION
+# Name: get-production-model-version
+# Description: Retrieve the on-production model version (model with a {"stage": "Production"} tag)
+# Inputs:
+#    mlflow_tracking_uri: str
+#    registered_model_name: str
+# Outputs:
+#    model_version: str
+#    run_id: str
+components:
+  comp-get-production-model-version:
+    executorLabel: exec-get-production-model-version
+    inputDefinitions:
+      parameters:
+        mlflow_tracking_uri:
+          description: The URI of the MLflow service
+          parameterType: STRING
+        registered_model_name:
+          description: The name of the registered model, it's the name passed as the
+            "registered_model_name" argument to the mlflow.lightgbm.log_model function
+          parameterType: STRING
+    outputDefinitions:
+      parameters:
+        model_version:
+          parameterType: STRING
+        run_id:
+          parameterType: STRING
+deploymentSpec:
+  executors:
+    exec-get-production-model-version:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - get_production_model_version
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet     --no-warn-script-location 'mlflow==2.9.2'\
+          \ 'kfp==2.0.1' && \"$0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          python3 -m kfp.components.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef get_production_model_version(registered_model_name: str, mlflow_tracking_uri:\
+          \ str) -> NamedTuple(\"Output\", [(\"model_version\", str), (\"run_id\"\
+          , str),]):\n    \"\"\"\n    Retrieve the on-production model version (model\
+          \ with a {\"stage\": \"Production\"} tag)\n    Args:\n        registered_model_name:\
+          \ The name of the registered model, it's the name passed as the \"registered_model_name\"\
+          \ argument to the mlflow.lightgbm.log_model function\n        mlflow_tracking_uri:\
+          \ The URI of the MLflow service\n    Returns:\n        A namedtuple consisting\
+          \ of the on-production model version and the corresponding MLflow Run ID\n\
+          \    \"\"\"\n    from mlflow import MlflowClient\n    from collections import\
+          \ namedtuple\n\n    mlflow_client = MlflowClient(tracking_uri=mlflow_tracking_uri)\n\
+          \    output = namedtuple(\"Output\", [\"model_version\", \"run_id\"])\n\
+          \    model_version = None # on-production model version\n    mlflow_run_id\
+          \ = None # corresponding MLflow Run ID\n\n    ### START CODE HERE\n    #\
+          \ Use search_model_versions() to find the versions for the registered model\n\
+          \    model_versions = mlflow_client.search_model_versions(f\"name='{registered_model_name}'\"\
+          )\n\n    # Loop through model versions to find the one in \"Production\"\
+          \ stage\n    for version_info in model_versions:\n        if version_info.current_stage\
+          \ == \"Production\":\n            model_version = version_info.version\n\
+          \            mlflow_run_id = version_info.run_id\n            break\n\n\
+          \    if model_version is None or mlflow_run_id is None:\n        raise ValueError(f\"\
+          No model found in 'Production' stage for model: {registered_model_name}\"\
+          )\n\n\n    ### END CODE HERE\n\n    return output(f\"{registered_model_name}-{model_version}\"\
+          , mlflow_run_id)\n\n"
+        image: python:3.11
+pipelineInfo:
+  name: get-production-model-version
+root:
+  dag:
+    outputs:
+      parameters:
+        model_version:
+          valueFromParameter:
+            outputParameterKey: model_version
+            producerSubtask: get-production-model-version
+        run_id:
+          valueFromParameter:
+            outputParameterKey: run_id
+            producerSubtask: get-production-model-version
+    tasks:
+      get-production-model-version:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-get-production-model-version
+        inputs:
+          parameters:
+            mlflow_tracking_uri:
+              componentInputParameter: mlflow_tracking_uri
+            registered_model_name:
+              componentInputParameter: registered_model_name
+        taskInfo:
+          name: get-production-model-version
+  inputDefinitions:
+    parameters:
+      mlflow_tracking_uri:
+        description: The URI of the MLflow service
+        parameterType: STRING
+      registered_model_name:
+        description: The name of the registered model, it's the name passed as the
+          "registered_model_name" argument to the mlflow.lightgbm.log_model function
+        parameterType: STRING
+  outputDefinitions:
+    parameters:
+      model_version:
+        parameterType: STRING
+      run_id:
+        parameterType: STRING
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.0.1

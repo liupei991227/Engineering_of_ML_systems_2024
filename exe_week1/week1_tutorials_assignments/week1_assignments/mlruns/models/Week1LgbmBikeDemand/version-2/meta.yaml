@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1730894289379
+current_stage: None
+description: null
+last_updated_timestamp: 1730894289379
+name: Week1LgbmBikeDemand
+run_id: a7dcbda4bf5f479cabc6b28eee21702d
+run_link: null
+source: file:///Users/liupei/Desktop/engineering_of_ml_systems/exe_week1/week1_tutorials_assignments/week1_assignments/mlruns/0/a7dcbda4bf5f479cabc6b28eee21702d/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///Users/liupei/Desktop/engineering_of_ml_systems/exe_week1/week1_tutorials_assignments/week1_assignments/mlruns/0/a7dcbda4bf5f479cabc6b28eee21702d/artifacts/model
+user_id: null
+version: 2

@@ -1,0 +1,38 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: bike-lgbm-scale
+  namespace: kserve-inference
+spec:
+  predictor:
+    serviceAccountName: kserve-sa
+    ### START CONF HERE
+    model:
+      modelFormat:
+        name: lightgbm
+      storageUri: "s3://mlflow/7/46df22f2a80042468a81d304db06896b/artifacts/lgbm-bike"
+      protocolVersion: "v2"
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: bike-lgbm-scale
+  namespace: kserve-inference
+spec:
+  scaleTargetRef:
+    apiVersion: serving.kserve.io/v1beta1
+    kind: InferenceService
+    name: bike-lgbm-scale  
+  minReplicas: 2  
+  maxReplicas: 8  
+  metrics:
+  - type: External
+    external:
+      metric:
+        name: rps
+      target:
+        type: Value
+        value: 5
+
+    ### END CONF HERE

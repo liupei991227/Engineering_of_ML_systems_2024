@@ -1,0 +1,25 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: bike-xgb-1
+  namespace: kserve-inference
+spec:
+  predictor:
+    serviceAccountName: kserve-sa
+    ### START CONF HERE
+    xgboost:
+      storageUri: "s3://mlflow/8/4506ddda675f4c3c997d22bae1f4c03e/artifacts/xgb-bike" 
+    ### END CONF HERE
+---
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: bike-xgb-2
+  namespace: kserve-inference
+spec:
+  predictor:
+    serviceAccountName: kserve-sa
+    ### START CONF HERE
+    xgboost:
+      storageUri: "s3://mlflow/8/a3de4770e6704e9cbeb89d7e900737dd/artifacts/xgb-bike" 
+    ### END CONF HERE

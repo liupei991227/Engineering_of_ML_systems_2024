@@ -1,0 +1,38 @@
+apiVersion: "serving.kserve.io/v1alpha1"
+kind: InferenceGraph 
+metadata: 
+  name: my-graph2
+  namespace: kserve-inference
+spec: 
+  nodes: 
+    ### START CONF HERE
+    root:
+      routerType: "Splitter"  
+      steps:
+        # Route based on the modelType field in the request
+        - nodeName: lgbmEnsemble
+          condition: "[@this].#(modelType==\"lgbm\")"
+          weight: 50  
+        - nodeName: xgbEnsemble
+          condition: "[@this].#(modelType==\"xgb\")"
+          weight: 50  
+
+    
+    lgbmEnsemble:
+      routerType: "Ensemble"  
+      steps:
+        - nodeName: bike-lgbm-1
+          weight: 1  
+        - nodeName: bike-lgbm-2
+          weight: 1  
+
+    xgbEnsemble:
+      routerType: "Ensemble"  
+      steps:
+        - nodeName: bike-xgb-1
+          weight: 1  
+        - nodeName: bike-xgb-2
+          weight: 1  
+
+
+    ### END CONF HERE

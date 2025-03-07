@@ -1,0 +1,152 @@
+# PIPELINE DEFINITION
+# Name: preprocess-data
+# Description: Args:
+#              data: Input of type Dataset where the dataset is read from
+#              train_x_csv: Output of type Dataset where the training features are saved
+#              train_y_csv: Output of type Dataset where the training target is saved
+#              test_x_csv: Output of type Dataset where the test features are saved
+#              test_y_csv: Output of type Dataset where the test target is saved
+# Inputs:
+#    data: system.Dataset
+# Outputs:
+#    test_x_csv: system.Dataset
+#    test_y_csv: system.Dataset
+#    train_x_csv: system.Dataset
+#    train_y_csv: system.Dataset
+components:
+  comp-preprocess-data:
+    executorLabel: exec-preprocess-data
+    inputDefinitions:
+      artifacts:
+        data:
+          artifactType:
+            schemaTitle: system.Dataset
+            schemaVersion: 0.0.1
+    outputDefinitions:
+      artifacts:
+        test_x_csv:
+          artifactType:
+            schemaTitle: system.Dataset
+            schemaVersion: 0.0.1
+        test_y_csv:
+          artifactType:
+            schemaTitle: system.Dataset
+            schemaVersion: 0.0.1
+        train_x_csv:
+          artifactType:
+            schemaTitle: system.Dataset
+            schemaVersion: 0.0.1
+        train_y_csv:
+          artifactType:
+            schemaTitle: system.Dataset
+            schemaVersion: 0.0.1
+deploymentSpec:
+  executors:
+    exec-preprocess-data:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - preprocess_data
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet     --no-warn-script-location 'pandas~=2.2.0'\
+          \ 'kfp==2.0.1' && \"$0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          python3 -m kfp.components.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport pandas as pd\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef preprocess_data(\n    data: Input[Dataset],\n    train_x_csv:\
+          \ Output[Dataset],\n    train_y_csv: Output[Dataset],\n    test_x_csv: Output[Dataset],\n\
+          \    test_y_csv: Output[Dataset],\n):\n    \"\"\"\n    Args:\n        data:\
+          \ Input of type Dataset where the dataset is read from\n        train_x_csv:\
+          \ Output of type Dataset where the training features are saved\n       \
+          \ train_y_csv: Output of type Dataset where the training target is saved\n\
+          \        test_x_csv: Output of type Dataset where the test features are\
+          \ saved\n        test_y_csv: Output of type Dataset where the test target\
+          \ is saved\n    \"\"\"\n    target = \"count\"\n\n    ### START CODE HERE\n\
+          \    # Read the dataset\n    df = pd.read_csv(data.path)\n\n    # Convert\
+          \ \"datetime\" to Pandas datetime object\n    df[\"datetime\"] = pd.to_datetime(df[\"\
+          datetime\"])\n\n    # Create new features from the \"datetime\" column\n\
+          \    df[\"hour\"] = df[\"datetime\"].dt.hour\n    df[\"day\"] = df[\"datetime\"\
+          ].dt.day\n    df[\"month\"] = df[\"datetime\"].dt.month\n\n    # Drop unnecessary\
+          \ columns\n    df = df.drop(columns=[\"datetime\", \"casual\", \"registered\"\
+          ])\n\n    # Split into training and test datasets\n    train_df = df.iloc[:-168]\n\
+          \    test_df = df.iloc[-168:]\n\n    # Split features and target\n    train_x\
+          \ = train_df.drop(columns=[target])\n    train_y = train_df[[target]]\n\
+          \    test_x = test_df.drop(columns=[target])\n    test_y = test_df[[target]]\n\
+          \n    # Save datasets to output paths\n    train_x.to_csv(train_x_csv.path,\
+          \ index=False)\n    train_y.to_csv(train_y_csv.path, index=False)\n    test_x.to_csv(test_x_csv.path,\
+          \ index=False)\n    test_y.to_csv(test_y_csv.path, index=False)\n    ###\
+          \ END CODE HERE\n\n"
+        image: python:3.11
+pipelineInfo:
+  name: preprocess-data
+root:
+  dag:
+    outputs:
+      artifacts:
+        test_x_csv:
+          artifactSelectors:
+          - outputArtifactKey: test_x_csv
+            producerSubtask: preprocess-data
+        test_y_csv:
+          artifactSelectors:
+          - outputArtifactKey: test_y_csv
+            producerSubtask: preprocess-data
+        train_x_csv:
+          artifactSelectors:
+          - outputArtifactKey: train_x_csv
+            producerSubtask: preprocess-data
+        train_y_csv:
+          artifactSelectors:
+          - outputArtifactKey: train_y_csv
+            producerSubtask: preprocess-data
+    tasks:
+      preprocess-data:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-preprocess-data
+        inputs:
+          artifacts:
+            data:
+              componentInputArtifact: data
+        taskInfo:
+          name: preprocess-data
+  inputDefinitions:
+    artifacts:
+      data:
+        artifactType:
+          schemaTitle: system.Dataset
+          schemaVersion: 0.0.1
+  outputDefinitions:
+    artifacts:
+      test_x_csv:
+        artifactType:
+          schemaTitle: system.Dataset
+          schemaVersion: 0.0.1
+      test_y_csv:
+        artifactType:
+          schemaTitle: system.Dataset
+          schemaVersion: 0.0.1
+      train_x_csv:
+        artifactType:
+          schemaTitle: system.Dataset
+          schemaVersion: 0.0.1
+      train_y_csv:
+        artifactType:
+          schemaTitle: system.Dataset
+          schemaVersion: 0.0.1
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.0.1

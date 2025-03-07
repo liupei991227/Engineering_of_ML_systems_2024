@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/liupei/Desktop/engineering_of_ml_systems/exe_week1/week1_tutorials_assignments/week1_assignments/mlruns/0/a13a27f686924820b9ab43e5f935c982/artifacts
+end_time: 1730893189796
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: a13a27f686924820b9ab43e5f935c982
+run_name: calm-donkey-365
+run_uuid: a13a27f686924820b9ab43e5f935c982
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1730893187271
+status: 3
+tags: []
+user_id: liupei
